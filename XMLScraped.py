@@ -12,8 +12,6 @@ def extraer_datos_xml(archivo_xml,opcion):
         tree = ET.parse(archivo_xml)
         root = tree.getroot()
 
-        
-         
         nombre = archivo_xml.name
         nombre = nombre.replace('.xml', '').replace('.XML', '')  
 
@@ -48,6 +46,8 @@ def extraer_datos_xml(archivo_xml,opcion):
         metodoPago = comprobante.attrib.get('MetodoPago')
         formaPago = get_forma_pago(str(comprobante.attrib.get('FormaPago')))
         uso = get_uso_cfdi(str(root.find('.//cfdi:Receptor',namespaces).attrib.get('UsoCFDI')))
+        moneda = comprobante.attrib.get('Moneda') or comprobante.attrib.get('moneda')
+        
 
         conceptos = root.findall('.//cfdi:Concepto', namespaces)
 
@@ -67,15 +67,15 @@ def extraer_datos_xml(archivo_xml,opcion):
         if opcion == "ambas":
             retencion_iva = get_retIva(conceptos, namespaces)
             retencion_isr = get_retIsr(conceptos, namespaces)
-            return [nombre, folio, fecha, concepto, subtotal, iva_total,retencion_iva,retencion_isr, total, estado,tipoComprobante,metodoPago,formaPago,uso]
+            return [nombre, folio, fecha, concepto, subtotal, iva_total,retencion_iva,retencion_isr, total, estado,tipoComprobante,metodoPago,formaPago,uso,moneda,rfc_emisor]
         elif opcion == "ret_isr":
             retencion_Isr = get_retIsr(root, namespaces)
-            return [nombre, folio, fecha, concepto, subtotal, iva_total,retencion_Isr, total, estado,tipoComprobante,metodoPago,formaPago,uso]
+            return [nombre, folio, fecha, concepto, subtotal, iva_total,retencion_Isr, total, estado,tipoComprobante,metodoPago,formaPago,uso,moneda,rfc_emisor]
         elif  opcion == "ret_iva" :
             retencion_iva = get_retIva(root, namespaces)
-            return [nombre, folio, fecha, concepto, subtotal, iva_total,retencion_iva, total, estado,tipoComprobante,metodoPago,formaPago,uso]
+            return [nombre, folio, fecha, concepto, subtotal, iva_total,retencion_iva, total, estado,tipoComprobante,metodoPago,formaPago,uso,moneda,rfc_emisor]
         elif opcion == "ninguna":
-            return [nombre, folio, fecha, concepto, subtotal, iva_total, total, estado,tipoComprobante,metodoPago,formaPago,uso]
+            return [nombre, folio, fecha, concepto, subtotal, iva_total, total, estado,tipoComprobante,metodoPago,formaPago,uso,moneda,rfc_emisor]
 
         
 
@@ -404,13 +404,13 @@ def procesar_zip_y_guardar_excel(root,opcion):
         ws.title = "Datos XML"
 
         if opcion == "ambas":
-            ws.append(["Folio Fiscal", "Folio", "Fecha", "Concepto", "Subtotal", "IVA", "Retención IVA", "Retención ISR", "Total", "Estado del CFDI","Tipo CFDI","Metodo Pago", "Forma Pago", "Uso CFDI"])
+            ws.append(["Folio Fiscal", "Folio", "Fecha", "Concepto", "Subtotal", "IVA", "Retención IVA", "Retención ISR", "Total", "Estado del CFDI","Tipo CFDI","Metodo Pago", "Forma Pago", "Uso CFDI", "Moneda", "RFC_Emisor"])
         elif opcion == "ret_iva":
-            ws.append(["Folio Fiscal", "Folio", "Fecha", "Concepto", "Subtotal", "IVA", "Retención IVA", "Total", "Estado del CFDI","Tipo CFDI","Metodo Pago", "Forma Pago", "Uso CFDI"])
+            ws.append(["Folio Fiscal", "Folio", "Fecha", "Concepto", "Subtotal", "IVA", "Retención IVA", "Total", "Estado del CFDI","Tipo CFDI","Metodo Pago", "Forma Pago", "Uso CFDI", "Moneda", "RFC_Emisor"])
         elif opcion == "ret_isr":
-            ws.append(["Folio Fiscal", "Folio", "Fecha", "Concepto", "Subtotal", "IVA", "Retención ISR", "Total", "Estado del CFDI","Tipo CFDI","Metodo Pago", "Forma Pago", "Uso CFDI"])
+            ws.append(["Folio Fiscal", "Folio", "Fecha", "Concepto", "Subtotal", "IVA", "Retención ISR", "Total", "Estado del CFDI","Tipo CFDI","Metodo Pago", "Forma Pago", "Uso CFDI", "Moneda", "RFC_Emisor"])
         elif opcion == "ninguna":
-            ws.append(["Folio Fiscal", "Folio", "Fecha", "Concepto", "Subtotal", "IVA", "Total", "Estado del CFDI","Tipo CFDI","Metodo Pago", "Forma Pago", "Uso CFDI"])
+            ws.append(["Folio Fiscal", "Folio", "Fecha", "Concepto", "Subtotal", "IVA", "Total", "Estado del CFDI","Tipo CFDI","Metodo Pago", "Forma Pago", "Uso CFDI", "Moneda", "RFC_Emisor"])
         elif opcion == "nomina":
             ws.append(campos_nomina)
         elif opcion == "deducciones":

@@ -1,2 +1,7 @@
 /build
-XMLScraped.spec 
+XMLScraped.spec
+/__pycache__
+__pycache__/
+/venv
+venv/
+/venv/
